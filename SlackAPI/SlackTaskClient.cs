@@ -485,6 +485,44 @@ namespace SlackAPI
             return APIRequestWithTokenAsync<LoginResponse>(new Tuple<string, string>("agent", agent));
         }
 
+        public Task<UpdateResponse> UpdateAsync(
+            string ts,
+            string channelId,
+            string text,
+            string botName = null,
+            string parse = null,
+            bool linkNames = false,
+            Attachment[] attachments = null,
+            bool as_user = false)
+        {
+            List<Tuple<string, string>> parameters = new List<Tuple<string, string>>();
+
+            parameters.Add(new Tuple<string, string>("ts", ts));
+            parameters.Add(new Tuple<string, string>("channel", channelId));
+            parameters.Add(new Tuple<string, string>("text", text));
+
+            if (!string.IsNullOrEmpty(botName))
+                parameters.Add(new Tuple<string, string>("username", botName));
+
+            if (!string.IsNullOrEmpty(parse))
+                parameters.Add(new Tuple<string, string>("parse", parse));
+
+            if (linkNames)
+                parameters.Add(new Tuple<string, string>("link_names", "1"));
+
+            if (attachments != null && attachments.Length > 0)
+                parameters.Add(new Tuple<string, string>("attachments",
+                    JsonConvert.SerializeObject(attachments, Formatting.None,
+                            new JsonSerializerSettings // Shouldn't include a not set property
+                            {
+                                NullValueHandling = NullValueHandling.Ignore
+                            })));
+
+            parameters.Add(new Tuple<string, string>("as_user", as_user.ToString()));
+
+            return APIRequestWithTokenAsync<UpdateResponse>(parameters.ToArray());
+        }
+
         public Task<JoinDirectMessageChannelResponse> JoinDirectMessageChannelAsync(string user)
         {
             var param = new Tuple<string, string>("user", user);
