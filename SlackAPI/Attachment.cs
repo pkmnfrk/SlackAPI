@@ -13,6 +13,8 @@
         public string title;
         public string title_link;
         public string text;
+		public string footer;
+		public string ts;
         public Field[] fields;
         
         public string image_url;
